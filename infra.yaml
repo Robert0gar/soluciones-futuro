@@ -40,11 +40,24 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
+          # 1. Actualizar e instalar dependencias
           dnf update -y
-          dnf install -y docker
+          dnf install -y docker git
+          
+          # 2. Encender Docker
           systemctl start docker
           systemctl enable docker
-          usermod -a -G docker ec2-user
+          
+          # 3. Instalar Docker Compose (v2)
+          mkdir -p /usr/local/lib/docker/cli-plugins/
+          curl -SL https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+          chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+          
+          # 4. Clonar tu proyecto y levantar Docker
+          cd /home/ec2-user
+          git clone https://github.com/Robert0gar/soluciones-futuro.git
+          cd soluciones-futuro
+          docker compose up -d
       Tags:
         - Key: Name
           Value: Servidor-Financiero-Automatizado
