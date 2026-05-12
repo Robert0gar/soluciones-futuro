@@ -26,7 +26,7 @@ Resources:
     Type: AWS::EC2::InternetGateway
 
   VPCGatewayAttachment:
-    Type: AWS::Type: AWS::EC2::VPCGatewayAttachment
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref VPCProyecto
       InternetGatewayId: !Ref InternetGateway
@@ -34,7 +34,6 @@ Resources:
   ServidorFinanciero:
     Type: AWS::EC2::Instance
     Properties:
-      # AMI ACTUALIZADA PARA US-EAST-1 (Amazon Linux 2023)
       ImageId: ami-0440d3b780d96b29d
       InstanceType: t2.micro
       SubnetId: !Ref SubredPublica
@@ -46,7 +45,6 @@ Resources:
           systemctl start docker
           systemctl enable docker
           usermod -a -G docker ec2-user
-          echo "La infraestructura financiera está lista" > /var/www/html/status.txt
       Tags:
         - Key: Name
           Value: Servidor-Financiero-Automatizado
@@ -54,7 +52,6 @@ Resources:
   BucketS3Proyecto:
     Type: AWS::S3::Bucket
     Properties:
-      # Nombre único que pusimos para evitar el error anterior
       BucketName: !Sub "evidencias-roberto-final-proyecto-v100"
       VersioningConfiguration:
         Status: Enabled
