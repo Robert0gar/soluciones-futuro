@@ -26,7 +26,7 @@ Resources:
     Type: AWS::EC2::InternetGateway
 
   VPCGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
+    Type: AWS::Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref VPCProyecto
       InternetGatewayId: !Ref InternetGateway
@@ -34,24 +34,18 @@ Resources:
   ServidorFinanciero:
     Type: AWS::EC2::Instance
     Properties:
-      # Asegúrate de usar la AMI correcta de tu región (Amazon Linux 2023)
-      ImageId: ami-0bb841ac39861251c 
+      # AMI ACTUALIZADA PARA US-EAST-1 (Amazon Linux 2023)
+      ImageId: ami-0440d3b780d96b29d
       InstanceType: t2.micro
       SubnetId: !Ref SubredPublica
-      # --- AQUÍ EMPIEZA LA MAGIA DEL USER DATA ---
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          # 1. Actualizar el sistema
           dnf update -y
-          # 2. Instalar Docker
           dnf install -y docker
-          # 3. Arrancar el servicio de Docker
           systemctl start docker
           systemctl enable docker
-          # 4. Darle permisos al usuario por defecto (opcional)
           usermod -a -G docker ec2-user
-          # 5. Mensaje de confirmación en el log
           echo "La infraestructura financiera está lista" > /var/www/html/status.txt
       Tags:
         - Key: Name
@@ -60,6 +54,7 @@ Resources:
   BucketS3Proyecto:
     Type: AWS::S3::Bucket
     Properties:
+      # Nombre único que pusimos para evitar el error anterior
       BucketName: !Sub "evidencias-roberto-final-proyecto-v100"
       VersioningConfiguration:
         Status: Enabled
