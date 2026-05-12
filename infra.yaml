@@ -34,12 +34,28 @@ Resources:
   ServidorFinanciero:
     Type: AWS::EC2::Instance
     Properties:
+      # Asegúrate de usar la AMI correcta de tu región (Amazon Linux 2023)
+      ImageId: ami-0bb841ac39861251c 
       InstanceType: t2.micro
-      ImageId: ami-0bb841ac39861251c  
       SubnetId: !Ref SubredPublica
+      # --- AQUÍ EMPIEZA LA MAGIA DEL USER DATA ---
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # 1. Actualizar el sistema
+          dnf update -y
+          # 2. Instalar Docker
+          dnf install -y docker
+          # 3. Arrancar el servicio de Docker
+          systemctl start docker
+          systemctl enable docker
+          # 4. Darle permisos al usuario por defecto (opcional)
+          usermod -a -G docker ec2-user
+          # 5. Mensaje de confirmación en el log
+          echo "La infraestructura financiera está lista" > /var/www/html/status.txt
       Tags:
         - Key: Name
-          Value: EC2-Automatizada-DevOps
+          Value: Servidor-Financiero-Automatizado
 
   BucketS3Proyecto:
     Type: AWS::S3::Bucket
