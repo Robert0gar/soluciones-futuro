@@ -1,7 +1,46 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Infraestructura base para Soluciones Futuro - Roberto y Ricardo
+Description: Infraestructura Completa Soluciones Futuro - Red, Servidor y Almacenamiento.
 
 Resources:
+  VPCProyecto:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: VPC-Financiera
+
+  SubredPublica:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCProyecto
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Subred-Publica-Financiera
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPCProyecto
+      InternetGatewayId: !Ref InternetGateway
+
+  ServidorFinanciero:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0bb841ac39861251c  
+      SubnetId: !Ref SubredPublica
+      Tags:
+        - Key: Name
+          Value: EC2-Automatizada-DevOps
+
   BucketS3Proyecto:
     Type: AWS::S3::Bucket
     Properties:
@@ -12,7 +51,7 @@ Resources:
   TablaLogsBackup:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: BackupLogsFinancieros
+      TableName: BackupLogsFinancieros_Final
       AttributeDefinitions:
         - AttributeName: log_id
           AttributeType: S
